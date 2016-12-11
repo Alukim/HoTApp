@@ -9,8 +9,8 @@ namespace susziMobilne
 {
     public interface IRestService
     {
-        Task<string> CheckUser(string login,string password);
         Task<User> GetUser(string login, string password);
+
 
         //Task SaveTodoItemAsync(TodoItem item, bool isNewItem);
 

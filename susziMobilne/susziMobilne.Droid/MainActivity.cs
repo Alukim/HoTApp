@@ -9,6 +9,7 @@ using Android.OS;
 using System.Threading.Tasks;
 using System.Net;
 using Windows.Data.Json;
+using susziMobilne.Model;
 
 namespace susziMobilne.Droid
 {
@@ -37,28 +38,19 @@ namespace susziMobilne.Droid
             string login = FindViewById<EditText>(Resource.Id.loginTextBox).Text;
             string password = FindViewById<EditText>(Resource.Id.passwordTextBox).Text;
             RestService service = new RestService();
-            var c=await service.CheckUser(login, password);
+            User user = await service.GetUser(login, password);
             
-            if(string.IsNullOrEmpty(c))
+            if(user!=null && user.Id!=null)
             {
-
+                this.StartActivity(typeof(MainMenu));
+                this.Finish();
             }
-            //service.CheckUserCompleted += Service_CheckUserCompleted;
-
-
-            //if(ApiService.CheckUser(login,password))
-            //{
-
-            //}
+            else
+            {
+                Toast.MakeText(this, "Access denied", ToastLength.Long).Show();
+            }
         }
 
-        //private void Service_CheckUserCompleted(object sender, Test e)
-        //{
-        //    if(e.value)
-        //    {
-        //        string c = "";
-        //    }
-        //}
     }
 }
 

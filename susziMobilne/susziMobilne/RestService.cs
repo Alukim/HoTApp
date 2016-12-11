@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using susziMobilne.Model;
+using System.Net.Http.Headers;
 
 namespace susziMobilne
 {
@@ -15,62 +16,210 @@ namespace susziMobilne
     public class RestService:IRestService
     {
         HttpClient client;
-        public event EventHandler<Test> CheckUserCompleted;
         public RestService()
         {
             client = new HttpClient();
             client.MaxResponseContentBufferSize = 256000;
         }
 
-
-        //web api test
-        public async Task<string>  CheckUser(string login,string password)
+        public async Task<Schedule> GetSchedule(int UserID)
         {
-            string items = null;
-            var uri = new Uri(string.Format(Constants.RestUrl, string.Empty));
-
+            Schedule schedule = new Schedule();
+            var uri = new Uri(Constants.StudentController);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
             {
-                var response = await client.GetAsync(uri);
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, "schedule");
+                string json = JsonConvert.SerializeObject(new { userid=UserID });
+                StringContent cont = new StringContent(json,
+                    Encoding.UTF8, "application/json");
+                message.Content = cont;
+                var response = await client.SendAsync(message);
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    items = JsonConvert.DeserializeObject<string>(content);
+                    schedule = JsonConvert.DeserializeObject<Schedule>(content);
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                Debug.WriteLine(@"				ERROR {0}", ex.Message);
+                Debug.WriteLine(@"ERROR {0}", ex.Message);
             }
 
-
-            //CheckUserCompleted.Invoke(this, new Test(true));
-
-            return items;
+            return schedule;
         }
 
-        public async Task<User> GetUser(string login, string password)
+        public async Task<ScheduleLine> GetScheduleLine(int ScheduleLine)
         {
-            User user = new User();
-            var uri = new Uri(string.Format(Constants.RestUrl + string.Format("login{0}&password{1}", login, password),
-                string.Empty));
-         
+            ScheduleLine line = new ScheduleLine();
+            var uri = new Uri(Constants.StudentController);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             try
             {
-                var response = await client.GetAsync(uri);
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, "scheduleline");
+                string json = JsonConvert.SerializeObject(new { scheduleline= ScheduleLine});
+                StringContent cont = new StringContent(json,
+                    Encoding.UTF8, "application/json");
+                message.Content = cont;
+                var response = await client.SendAsync(message);
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    user = JsonConvert.DeserializeObject<User>(content);
+                    line = JsonConvert.DeserializeObject<ScheduleLine>(content);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(@"				ERROR {0}", ex.Message);
-                return null;
+                Debug.WriteLine(@"ERROR {0}", ex.Message);
+            }
+            return line;
+        }
+
+        public async Task<Student> GetStudent (int studentid)
+        {
+            Student student = new Student();
+            var uri=new Uri(Constants.StudentController);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, "scheduleline");
+                string json = JsonConvert.SerializeObject(new { id = studentid });
+                StringContent cont = new StringContent(json,
+                    Encoding.UTF8, "application/json");
+                message.Content = cont;
+                var response = await client.SendAsync(message);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    student = JsonConvert.DeserializeObject<Student>(content);
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(@"ERROR {0}", ex.Message);
+            }
+            return student;
+        }
+
+        public async Task<Subject> GetSubject(int subjectid)
+        {
+            Subject student = new Subject();
+            var uri = new Uri(Constants.StudentController);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, "scheduleline");
+                string json = JsonConvert.SerializeObject(new { id = subjectid });
+                StringContent cont = new StringContent(json,
+                    Encoding.UTF8, "application/json");
+                message.Content = cont;
+                var response = await client.SendAsync(message);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    student = JsonConvert.DeserializeObject<Subject>(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"ERROR {0}", ex.Message);
+            }
+            return student;
+        }
+
+        public class Test
+        {
+            Guid id { get; set; }
+        }
+        public async Task<User> GetUser(string login, string password)
+        {
+            string login1 = login;
+            string password1 = password;
+            User user = new User();
+            var uri = new Uri(string.Format(Constants.StudentController));
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders
+            .Accept
+            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, "login");
+                string json = JsonConvert.SerializeObject(new { login = login1, password = password1 });
+                StringContent cont= new StringContent(json,
+                    Encoding.UTF8, "application/json");
+                message.Content = cont;
+                var response =await client.SendAsync(message);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    user= JsonConvert.DeserializeObject<User>(content);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"ERROR {0}", ex.Message);
             }
 
             return user;
+        }
+
+        public async Task<Group> GetGroup (string groupdid)
+        {
+            Group group = new Group();
+            var uri = new Uri(Constants.StudentController);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, "scheduleline");
+                string json = JsonConvert.SerializeObject(new { id = groupdid });
+                StringContent cont = new StringContent(json,
+                    Encoding.UTF8, "application/json");
+                message.Content = cont;
+                var response = await client.SendAsync(message);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    group = JsonConvert.DeserializeObject<Group>(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"ERROR {0}", ex.Message);
+            }
+            return group;
+        }
+
+        public async Task<Teacher> GetTeacher(int teacherid)
+        {
+            Teacher teacher = new Teacher();
+            var uri = new Uri(Constants.StudentController);
+            client.BaseAddress = uri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, "scheduleline");
+                string json = JsonConvert.SerializeObject(new { id = teacherid });
+                StringContent cont = new StringContent(json,
+                    Encoding.UTF8, "application/json");
+                message.Content = cont;
+                var response = await client.SendAsync(message);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    teacher = JsonConvert.DeserializeObject<Teacher>(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(@"ERROR {0}", ex.Message);
+            }
+            return teacher;
         }
     }
 }

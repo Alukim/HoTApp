@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace susziMobilne.Model
 {
-    public  class User
+    public class ScheduleLine
     {
         public Guid Id { get; set; }
-        public string Firstname { get; set; }
-        public string Lastname { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public Room Room {get;set;}
 
-
+        public DateTime Date { get; set; }
+        public Subject Subject { get; set; }
     }
 }
